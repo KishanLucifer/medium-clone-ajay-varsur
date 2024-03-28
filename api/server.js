@@ -9,6 +9,13 @@ import admin from 'firebase-admin';
 import serviceAccountKey from './medium-clone-1-firebase-adminsdk-eigtq-d5667abee3.json' assert { type: 'json' };
 import User from './Schema/User.js';
 import { getAuth } from 'firebase-admin/auth';
+import {
+  S3Client,
+  CreateBucketCommand,
+  PutObjectCommand,
+  GetObjectCommand,
+} from '@aws-sdk/client-s3'; // Updated AWS SDK v3 imports
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 dotenv.config();
 
@@ -27,6 +34,44 @@ mongoose.connect(process.env.DB_LOCATION, {
   autoIndex: true,
 });
 
+// Initialize S3 client with region, accessKeyId, and secretAccessKey
+const s3Client = new S3Client({
+  region: 'ap-south-1',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
+// async function getObjectURL(key) {
+//   const command = new GetObjectCommand({
+//     Bucket: 'kishanrokk',
+//     Key: key,
+//   });
+//   const uploadURL = await getSignedUrl(s3Client, command, {
+//     expiresIn: 3600,
+//   });
+
+//   return uploadURL;
+// }
+// function iniit() {
+//   console.log('url', getObjectURL);
+// }
+// iniit();
+
+async function putObjectURL() {
+  const imgName = `${nanoid()}-${Date.now()}.jpeg`;
+  const command = new PutObjectCommand({
+    Bucket: 'kishanrokk',
+    Key: imgName,
+    ContentType: 'image/jpeg',
+  });
+  const uploadURL = await getSignedUrl(s3Client, command, {
+    expiresIn: 3600,
+  });
+
+  return uploadURL;
+}
 // Middleware
 server.use(express.json());
 server.use(cors());
@@ -60,6 +105,15 @@ const formatUserDatatoSend = (user) => {
     fullname: user.personal_info.fullname,
   };
 };
+
+server.get('/get-upload-url', (req, res) => {
+  putObjectURL()
+    .then((url) => res.status(200).json({ uploadURL: url }))
+    .catch((err) => {
+      console.log(err.message);
+      return res.status(500).json({ error: err.message });
+    });
+});
 
 // Signup route
 server.post('/signup', async (req, res) => {
