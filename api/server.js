@@ -38,7 +38,7 @@ mongoose.connect(process.env.DB_LOCATION, {
 const s3Client = new S3Client({
   region: 'ap-south-1',
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY1,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
