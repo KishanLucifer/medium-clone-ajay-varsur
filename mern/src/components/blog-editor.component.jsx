@@ -23,7 +23,6 @@ const BlogEditor = () => {
         })
         .catch((err) => {
           return toast.error(err);
-          toast.dismiss(loadingToast);
         });
     }
   };
