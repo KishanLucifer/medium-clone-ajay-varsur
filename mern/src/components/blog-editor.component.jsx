@@ -26,6 +26,15 @@ const BlogEditor = () => {
         });
     }
   };
+  const handleTitleKeyDown = (e) => {
+    if (e.keyCode == 13) {
+      e.perventDefault();
+    }
+  };
+  const handleTitleChange = (e) => {
+    let input = e.target;
+    console.log(input);
+  };
   return (
     <>
       <nav className="navbar">
@@ -34,7 +43,7 @@ const BlogEditor = () => {
           <img src={logo.png} />
         </Link>
         <p className="max-md: hidden text-black line-clamp-1 w-full"></p>
-        New Blog
+        New Blog3
         <div className="flex gap-4 ml-auto">
           <button className="btn-dark py-2">Publish</button>
           <button className="btn-light py-2">Save Draft</button>
@@ -60,6 +69,12 @@ const BlogEditor = () => {
                 />
               </label>
             </div>
+            <textarea
+              placeholder="Blog Title"
+              className="text-4xl font-medium w-full h-20 outline-none mt-10 leading-tight placeholder-opacity-40"
+              onKeyDown={handleTitleKeyDown}
+              onChange={handleTitleChange}
+            ></textarea>
           </div>
         </section>
       </AnimationWrapper>
